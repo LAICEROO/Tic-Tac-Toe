@@ -13,17 +13,65 @@ screen.fill(BG_COLOR)
 class Board:
     def __init__(self):
         self.squares = np.zeros((ROWS, COLS))
+        self.empty_square = self.squares # List of empty squares
+        self.marked_square = 0
 
+    def final_state(self):
+        '''
+            @return 0 if there is no win yet(draw)
+            @return 1 if player 1 wins 
+            @return 2 if plater 2 wins
+        '''
+
+        # Vertical wins
+        for col in range(COLS):
+            if self.squares[0][col] == self.squares[1][col] == self.squares[2][col] != 0:
+                return self.squares[0][col]
+        
+        # Horizontal wins
+        for row in range(ROWS):
+            if self.squares[row][0] == self.squares[row][1] == self.squares[row][2] != 0:
+                return self.squares[row][0]
+        
+        #  Desc diagonal
+        if self.squares[0][0] == self.squares[1][1] == self.squares[2][2] != 0:
+            return self.squares[1][1]
+        
+        # Asc diagonal
+        if self.squares[2][0] == self.squares[1][1] == self.squares[0][2] != 0:
+            return self.squares[1][1]
+        
+        # No win yet
+        return 0
+        
     def mark_square(self, row, col, player):
         self.squares[row][col] = player
+        self.marked_square += 1
 
     def empty_square(self, row, col):
         return self.squares[row][col] == 0
+    
+    def get_empty_squares(self):
+        empty_squares = []
+        for row in range(ROWS):
+            for col in range(COLS):
+                if self.empty_square(row, col):
+                    empty_squares.append((row, col))
+        return empty_squares
+    
+    def isfull(self):
+        return self.marked_square == 9
+    
+    def isempty(self):
+        return self.marked_square == 0
 
 class Game:
     def __init__(self):
         self.board = Board()
+        # Self.ai = AI()
         self.player = 1 # 1 - cross # 2 - circle
+        self.gamemode = 'pvp' # Pvp or AI
+        self.running = True
         self.show_lines()
 
     def show_lines(self):
