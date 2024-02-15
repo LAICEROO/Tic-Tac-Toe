@@ -12,6 +12,6 @@
 - Player vs AI (PvAI): You can play against the AI, which uses the minimax algorithm to make decisions or do random moves.
 
 ## Usage
-To start the game, run the main.py file:
+To start the game, run the file:
 `tictactoe_ai.py`
 The game will open in a Pygame window. You can play against another player or against the AI.
