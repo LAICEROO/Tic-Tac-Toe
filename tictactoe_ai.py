@@ -1,3 +1,4 @@
+import copy
 import sys
 import pygame
 import random
@@ -14,8 +15,8 @@ screen.fill(BG_COLOR)
 class Board:
     def __init__(self):
         self.squares = np.zeros((ROWS, COLS))
-        self.empty_square = self.squares # List of empty squares
-        self.marked_square = 0
+        self.empty_sqrs = self.squares # List of empty squares
+        self.marked_sqrs = 0
 
     def final_state(self):
         '''
@@ -45,46 +46,97 @@ class Board:
         # No win yet
         return 0
         
-    def mark_square(self, row, col, player):
+    def mark_sqr(self, row, col, player):
         self.squares[row][col] = player
-        self.marked_square += 1
+        self.marked_sqrs  += 1
 
-    def empty_square(self, row, col):
+    def empty_sqr(self, row, col):
         return self.squares[row][col] == 0
     
-    def get_empty_squares(self):
-        empty_squares = []
+    def get_empty_sqrs(self):
+        empty_sqrs = []
         for row in range(ROWS):
             for col in range(COLS):
-                if self.empty_square(row, col):
-                    empty_squares.append((row, col))
-        return empty_squares
+                if self.empty_sqr(row, col):
+                    empty_sqrs.append( (row, col) )
+        return empty_sqrs
     
     def isfull(self):
-        return self.marked_square == 9
+        return self.marked_sqrs == 9
     
     def isempty(self):
-        return self.marked_square == 0
+        return self.marked_sqrs == 0
 
 class AI:
-    def __init__(self, level = 0, player = 2):
+    def __init__(self, level = 1, player = 2):
         self.level = level
         self.player = player
 
     def rnd(self, board):
-        empty_sqrs = board.get_empty_squares()
-        index = random.randrange(0, len(empty_sqrs))
+        empty_sqrs = board.get_empty_sqrs()
+        idx = random.randrange(0, len(empty_sqrs))
 
-        return empty_sqrs[index]    # (row, col)
+        return empty_sqrs[idx]    # (row, col)
+    
+    def minimax(self, board, maximazing):
+        # Terminal case
+        case = board.final_state()
+
+        # Player 1 wins
+        if case == 1:
+            return 1, None # Eval, move
+        
+        # Player 2 wins
+        if case == 2:
+            return -1, None
+        
+        # Draw
+        elif board.isfull():
+            return 0, None
+        
+        if maximazing:
+            max_eval = -100
+            best_move = None
+            empty_sqrs = board.get_empty_sqrs()
+
+            for (row, col) in empty_sqrs:
+                temp_board = copy.deepcopy(board)
+                temp_board.mark_sqr(row, col, 1)
+                eval = self.minimax(temp_board, False)[0]
+                if eval > max_eval:
+                    max_eval = eval
+                    best_move = (row, col)
+
+            return max_eval, best_move
+
+        elif not maximazing:
+            min_eval = 100
+            best_move = None
+            empty_sqrs = board.get_empty_sqrs()
+
+            for (row, col) in empty_sqrs:
+                temp_board = copy.deepcopy(board)
+                temp_board.mark_sqr(row, col, self.player)
+                eval = self.minimax(temp_board, True)[0]
+                if eval < min_eval:
+                    min_eval = eval
+                    best_move = (row, col)
+
+            return min_eval, best_move
+
 
     def eval(self, main_board):
         if self.level == 0:
             # Random choice
+            eval = 'random'
             move = self.rnd(main_board)
         else:
             # Minimax algorithm choice
-            pass
+            eval, move = self.minimax(main_board, False)
+        print(f'AI has chosen to mark the square in pos {move} with an eval of: {eval}')
+
         return move # row, col
+    
 class Game:
     def __init__(self):
         self.board = Board()
@@ -142,8 +194,8 @@ def main():
                 row = pos[1] // SQSIZE
                 col = pos[0] // SQSIZE
 
-                if board.empty_square(row, col):
-                    board.mark_square(row, col, game.player)
+                if board.empty_sqr(row, col):
+                    board.mark_sqr(row, col, game.player)
                     game.draw_fig(row, col)
                     game.next_turn()
 
@@ -154,10 +206,9 @@ def main():
             # AI methods
             row, col = ai.eval(board)
 
-            board.mark_square(row, col, ai.player)
+            board.mark_sqr(row, col, ai.player)
             game.draw_fig(row, col)
             game.next_turn()
-
 
         pygame.display.update()
 
