@@ -1,5 +1,6 @@
 import sys
 import pygame
+import random
 import numpy as np
 
 from constants import *
@@ -65,12 +66,31 @@ class Board:
     def isempty(self):
         return self.marked_square == 0
 
+class AI:
+    def __init__(self, level = 0, player = 2):
+        self.level = level
+        self.player = player
+
+    def rnd(self, board):
+        empty_sqrs = board.get_empty_squares()
+        index = random.randrange(0, len(empty_sqrs))
+
+        return empty_sqrs[index]    # (row, col)
+
+    def eval(self, main_board):
+        if self.level == 0:
+            # Random choice
+            move = self.rnd(main_board)
+        else:
+            # Minimax algorithm choice
+            pass
+        return move # row, col
 class Game:
     def __init__(self):
         self.board = Board()
-        # Self.ai = AI()
+        self.ai = AI()
         self.player = 1 # 1 - cross # 2 - circle
-        self.gamemode = 'pvp' # Pvp or AI
+        self.gamemode = 'ai' # Pvp or ai
         self.running = True
         self.show_lines()
 
@@ -107,6 +127,7 @@ def main():
     # Object
     game = Game()
     board = game.board
+    ai = game.ai
 
     # Mainloop
     while True:
@@ -122,9 +143,21 @@ def main():
                 col = pos[0] // SQSIZE
 
                 if board.empty_square(row, col):
-                    game.board.mark_square(row, col, game.player)
+                    board.mark_square(row, col, game.player)
                     game.draw_fig(row, col)
                     game.next_turn()
+
+        if game.gamemode == "ai" and game.player == ai.player:
+            # Update the screen
+            pygame.display.update()
+
+            # AI methods
+            row, col = ai.eval(board)
+
+            board.mark_square(row, col, ai.player)
+            game.draw_fig(row, col)
+            game.next_turn()
+
 
         pygame.display.update()
 
