@@ -12,6 +12,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('TIC TAC TOE AI')
 screen.fill(BG_COLOR)
 
+# Classes
 class Board:
     def __init__(self):
         self.squares = np.zeros((ROWS, COLS))
@@ -92,12 +93,14 @@ class AI:
         self.level = level
         self.player = player
 
+    # Random
     def rnd(self, board):
         empty_sqrs = board.get_empty_sqrs()
         idx = random.randrange(0, len(empty_sqrs))
 
         return empty_sqrs[idx]    # (row, col)
-    
+
+   # Minimax 
     def minimax(self, board, maximazing):
         # Terminal case
         case = board.final_state()
@@ -144,7 +147,7 @@ class AI:
 
             return min_eval, best_move
 
-
+    # Main eval 
     def eval(self, main_board):
         if self.level == 0:
             # Random choice
@@ -166,11 +169,7 @@ class Game:
         self.running = True
         self.show_lines()
 
-    def make_move(self, row, col):
-        self.board.mark_sqr(row, col, self.player)
-        self.draw_fig(row, col)
-        self.next_turn()
-
+    # Draw methods
     def show_lines(self):
         # BG fill
         screen.fill(BG_COLOR)
@@ -200,6 +199,11 @@ class Game:
             center = (col * SQSIZE + SQSIZE // 2, row * SQSIZE + SQSIZE // 2)
             pygame.draw.circle(screen, CIRCLE_COLOR, center, RADIUS, CIRCLE_WIDTH)
 
+    def make_move(self, row, col):
+        self.board.mark_sqr(row, col, self.player)
+        self.draw_fig(row, col)
+        self.next_turn()
+
     def next_turn(self):
         self.player = self.player %2 + 1 
 
@@ -220,11 +224,14 @@ def main():
 
     # Mainloop
     while True:
+        # Pygame event
         for event in pygame.event.get():
+            # Quit event
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
+            # Keydown  event
             if event.type == pygame.KEYDOWN:
 
                 # g-gamemode
@@ -245,18 +252,21 @@ def main():
                 if event.key == pygame.K_1:
                     ai.level = 1
 
+            # Mouse click event
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # Convert from pixels to row and columns
                 pos = event.pos
                 row = pos[1] // SQSIZE
                 col = pos[0] // SQSIZE
 
+                # Human mark sqr
                 if board.empty_sqr(row, col) and game.running:
                     game.make_move(row, col)
 
                     if game.isover():
                         game.running = False
 
+        # AI initial call
         if game.gamemode == "ai" and game.player == ai.player and game.running:
             # Update the screen
             pygame.display.update()
