@@ -15,3 +15,6 @@
 To start the game, run the file:
 `tictactoe_ai.py`
 The game will open in a Pygame window. You can play against another player or against the AI.
+
+## Game snapshot
+![image](https://github.com/LAICEROO/Tic-Tac-Toe/assets/93771973/e8fee2b2-d2a3-4209-8233-4d1ae7e95161)
