@@ -1,4 +1,4 @@
-# Tic-Tac-Toe-game
+# Tic Tac Toe game
 
 ## Gameplay
 - Use the mouse to click on the square where you want to place your move.
