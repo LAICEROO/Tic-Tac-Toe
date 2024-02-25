@@ -18,3 +18,4 @@ The game will open in a Pygame window. You can play against another player or ag
 
 ## Game snapshot
 ![image](https://github.com/LAICEROO/Tic-Tac-Toe/assets/93771973/e8fee2b2-d2a3-4209-8233-4d1ae7e95161)
+![image](https://github.com/LAICEROO/Tic_Tac_Toe_AI/assets/93771973/69ef6658-10e6-4c0c-a99f-32cd75a42c68)
